@@ -36,13 +36,43 @@ int createIPCSocket( char* sockName )
 
 int writeToSocket( char* sockName, char* value )
 {
+	int sockFD;
+	if( (sockFD = socket( AF_LOCAL, SOCK_STREAM, 0 )) < 0 )
+	{
+		perror( "writeToSocket>socket" );
+		return -1;
+	}
+
+	struct sockaddr sock;
+	memset( &sock, '\0', sizeof( sock ) );
+
+	sock.sa_family = AF_LOCAL;
+	strcpy( sock.sa_data, sockName );
+
+	if( connect( sockFD, &sock, sizeof( sock ) ) < 0 )
+	{
+		perror( "writeToSocket>connect" );
+		close( sockFD );
+		return -1;
+	}
+
+	if( send( sockFD, value, strlen( value ), 0 ) < 0 )
+	{
+		perror( "writeToSocket>send" );
+	}
+
+	close( sockFD );
+
 	return 0;
 }
-
 
 int main() // for testing only!
 {
 	createIPCSocket( "TEST_SOCKET" );
+
+	char* value = "35832";
+
+	writeToSocket( "TEST_SOCKET", value );
 
 	return 0;
 }
