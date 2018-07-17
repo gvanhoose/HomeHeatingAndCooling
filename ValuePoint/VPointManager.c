@@ -6,6 +6,48 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include "ValuePoint.h"
+
+int vPointName( char* target, char* source, int srcSize, int talloc )
+{
+	memset( target, '\0', talloc );
+
+	char current;
+	int i;
+	for( i = 0; i < srcSize; i++ )
+	{
+		current = source[i];
+		if( current == '>' )
+		{
+			break;
+		}
+
+		target[i] = source[i];
+	}
+
+	return i;
+}
+
+int vPointValu( char* target, char* source, int srcSize, inttalloc )
+{
+	memset( target, '\0', talloc );
+
+	char current;
+	int i, demarkReached = 0, tsize = 0;
+	for( i = 0; i < srcSize; i++ )
+	{
+		current = source[i];
+		if( !demarkReached )
+		{
+			demarkReached = (current == '>')? 1 : 0;
+			continue;
+		}
+
+		target[ tsize++ ] = source[i];
+	}
+
+	return tsize;
+}
 
 int main()
 {
@@ -33,6 +75,11 @@ int main()
 	char recData [65];
 	int recSize = 0;
 
+	char vname [32];
+	char vvalu [32];
+
+	int nsize, vsize;
+
 	while(1)
 	{
 		int clientFD = accept( listenerFD, (struct sockaddr*) NULL, NULL );
@@ -40,3 +87,20 @@ int main()
 		memset( recData, '\0', 65 );
 
 		recSize = read( clientFD, recData, 64 );
+
+		nsize = vPointName( vname, recData, recSize, 32 );
+		vsize = vPointValu( vvalu, recData, recSize, 32 );
+
+		if( strcmp( "shutdown", vvalu ) == 0 )
+		{
+			break;
+		}
+
+		writeToVPoint( vname, vvalu );
+
+	}
+
+	close( listenerFD );
+
+	return 0;
+}
