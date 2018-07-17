@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -42,10 +43,14 @@ int vPointValu( char* target, char* source, int srcSize, int talloc )
 			demarkReached = (current == '>')? 1 : 0;
 			continue;
 		}
+		if( current == '\n' )
+		{
+			break;
+		}
 
-		target[ tsize++ ] = source[i];
+		target[ tsize++ ] = current;
 	}
-
+	target[--tsize] = '\0';		// BEWARE:  Depending on which OS sends this info, there may not be a second EOL char.  This line of code is only here because the client was running in Windos.
 	return tsize;
 }
 
@@ -91,7 +96,7 @@ int main()
 		nsize = vPointName( vname, recData, recSize, 32 );
 		vsize = vPointValu( vvalu, recData, recSize, 32 );
 
-		if( strcmp( "shutdown", vvalu ) == 0 )
+		if( strcmp( "test", vname) == 0 && strcmp( "shutdown", vvalu ) == 0 )
 		{
 			break;
 		}
