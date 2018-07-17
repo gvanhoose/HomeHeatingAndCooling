@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <string.h>
+#include "ValuePoint.h"
 
 int writeToVPoint( char* vName, char* value )
 {
@@ -58,19 +57,3 @@ int readVPoint( char* vName, char* target, int tarSize )
 
 	return rsize;
 }
-
-int main()
-{
-	char* val = "Hello world";
-	char* nam = "TESTVAL";
-	char tar [16];
-
-	writeToVPoint( nam, val );
-
-	readVPoint( nam, tar, 16 );
-
-	printf( "%s\n", tar );
-
-	return 0;
-}
-
