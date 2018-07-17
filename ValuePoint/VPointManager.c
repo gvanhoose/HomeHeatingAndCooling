@@ -28,7 +28,7 @@ int vPointName( char* target, char* source, int srcSize, int talloc )
 	return i;
 }
 
-int vPointValu( char* target, char* source, int srcSize, inttalloc )
+int vPointValu( char* target, char* source, int srcSize, int talloc )
 {
 	memset( target, '\0', talloc );
 
