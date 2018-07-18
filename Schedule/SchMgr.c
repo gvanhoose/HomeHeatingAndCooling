@@ -129,7 +129,7 @@ struct transition
 	int second;
 	char mode;
 	double setpoint;
-	char* zone;
+	int zone;
 };
 void printTrans( struct transition* tr, int day, int tnum )
 {
@@ -139,7 +139,7 @@ void printTrans( struct transition* tr, int day, int tnum )
 	printf( "\t  second = %d\n", tr->second );
 	printf( "\t    mode = %c\n", tr->mode );
 	printf( "\tsetpoint = %lf\n", tr->setpoint );
-	printf( "\t    zone = \"%s\"\n", tr->zone );
+	printf( "\t    zone = %d\n", tr->zone );
 
 	printf( "\n" );
 }
@@ -164,10 +164,10 @@ void tokenizeTransition( char* transition, struct transition* tran )
 		hr = (int)( ((time0 & 0x0F)*10) + (time1 & 0x0F) ),
 		mn = (int)( ((time2 & 0x0F)*10) + (time3 & 0x0F) ),
 		sec = hr*3600 + mn*60,
-		sp = (int)( ((stpt0 & 0x0F)*10) + (stpt1 & 0x0F) )
+		sp = (int)( ((stpt0 & 0x0F)*10) + (stpt1 & 0x0F) ),
+		zn = (int)( ((zone0 & 0x0F)*100) + ((zone1 & 0x0F)*10) + (zone2 & 0x0f) )
 		;
 
-	char zn [] = {zone0, zone1, zone2};
 	tran->second = sec;
 	tran->mode = md;
 	tran->setpoint = (double)(sp);
