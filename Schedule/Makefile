@@ -1,2 +1,2 @@
 all:
-	gcc Schedule.c -o sched
+	gcc SchMgr.c -o sched
