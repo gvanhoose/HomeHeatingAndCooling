@@ -1,2 +1,2 @@
 all:
-	gcc SchMgr.c -o sched
+	gcc SchMgr.c ../FileIO.c -o sched
