@@ -65,7 +65,7 @@ int appendToFile( char* filename, char* buffer, int size )
 	return writeToFile( filename, buffer, size, "a" );
 }
 
-
+/*
 int main()
 {
 	char buff [] = "Hello World!";
@@ -89,3 +89,4 @@ int main()
 
 	return 0;
 }
+*/
