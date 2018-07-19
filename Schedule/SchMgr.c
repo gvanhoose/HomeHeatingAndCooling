@@ -183,6 +183,11 @@ void tokenizeTransition( char* transition, struct transition* tran )
 	tran->zone = zn;
 }
 
+void convertSchedule()
+{
+	int txtalloc = 1024;
+	char buffer [txtalloc];
+	int ssize = getSchedule( buffer, txtalloc );//TODO:  left off here, quite abruptly
 
 
 int main()
