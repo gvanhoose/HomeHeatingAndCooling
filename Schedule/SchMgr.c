@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include "../FileIO.h"
+#include "../Standards.h"
 
 #define BASE_YEAR 1900
 #define MONTH_OFFSET 1
@@ -111,9 +112,14 @@ int countTransitions( char* daySch, int size )
 
 void isolTransitions( char** trans, int ntrans, char* daySch, int size )
 {
+//	printf( "Entering isolTransitions(...)\n" );
+//	printf( "\tntrans = %d\n", ntrans );
+//	printf( "\t  size = %d\n", size );
+
 	int curtran = 0, i, toklen = 0;
 	for( i = 2; i < size; i++ )		// skip the first two chars, which is the weekday number and the first space
 	{
+//		printf( "i = %d ", i );
 		if( daySch[i] == ' ' )
 		{
 			curtran++;
@@ -121,7 +127,10 @@ void isolTransitions( char** trans, int ntrans, char* daySch, int size )
 			continue;
 		}
 		trans[curtran][toklen++] = daySch[i];
+
+//		printf( "\ttrans[%d][%d] = %c\n", curtran, toklen - 1, trans[curtran][toklen - 1] );
 	}
+//	printf( "Exiting isolTransitions(...)\n" );
 }
 
 struct transition
@@ -182,7 +191,7 @@ int main()
 
 	fixDAT( ltime );
 
-	printTime( ltime );
+//	printTime( ltime );
 
 
 	int schalloc = 1024;
@@ -190,57 +199,107 @@ int main()
 
 	int schsize = getSchedule( schbuff, schalloc );
 
-	printf( "schsize = %d\n", schsize );
-	printf( "\nschedule:\n<\n%s>\n\n", schbuff );
+//	printf( "schsize = %d\n", schsize );
+//	printf( "\nschedule:\n<\n%s>\n\n", schbuff );
 
 	int dayOffsets [7];
 
 	schByDays( schbuff, schsize, dayOffsets );
 
-	char* sun = schbuff + dayOffsets[0];
-	char* mon = schbuff + dayOffsets[1];
-	char* tue = schbuff + dayOffsets[2];
-	char* wed = schbuff + dayOffsets[3];
-	char* thu = schbuff + dayOffsets[4];
-	char* fri = schbuff + dayOffsets[5];
-	char* sat = schbuff + dayOffsets[6];
+//	char* sun = schbuff + dayOffsets[0];
+//	char* mon = schbuff + dayOffsets[1];
+//	char* tue = schbuff + dayOffsets[2];
+//	char* wed = schbuff + dayOffsets[3];
+//	char* thu = schbuff + dayOffsets[4];
+//	char* fri = schbuff + dayOffsets[5];
+//	char* sat = schbuff + dayOffsets[6];
+//
+//	printf( "\t   Sunday = \"%s\"\n", sun );
+//	printf( "\t   Monday = \"%s\"\n", mon );
+//	printf( "\t  Tuesday = \"%s\"\n", tue );
+//	printf( "\tWednesday = \"%s\"\n", wed );
+//	printf( "\t Thursday = \"%s\"\n", thu );
+//	printf( "\t   Friday = \"%s\"\n", fri );
+//	printf( "\t Saturday = \"%s\"\n", sat );
 
-	printf( "\t   Sunday = \"%s\"\n", sun );
-	printf( "\t   Monday = \"%s\"\n", mon );
-	printf( "\t  Tuesday = \"%s\"\n", tue );
-	printf( "\tWednesday = \"%s\"\n", wed );
-	printf( "\t Thursday = \"%s\"\n", thu );
-	printf( "\t   Friday = \"%s\"\n", fri );
-	printf( "\t Saturday = \"%s\"\n", sat );
-
-	int mtranct = countTransitions( mon, strlen(mon) );
-
-	printf( "monday transitions:  %d\n", mtranct );
-
-	char* mtrans [mtranct];
-	int i;
-	for( i = 0; i < mtranct; i++ )
+	struct transition* allTranTokens [7];
+	int tcounts [7];
+	char* curDay;
+	int i, curCount, o;
+	for( i = 0; i < 7; i++ )
 	{
-		mtrans[i] = malloc(32);
+// segfault after this line at i = 0
+
+		curDay = schbuff + dayOffsets[i];
+		curCount = tcounts[i] = countTransitions( curDay, strlen(curDay) );
+
+		char* indivTrans [curCount];
+
+		for( o = 0; o < curCount; o++ )
+		{
+			indivTrans[o] = malloc(32);
+			memset( indivTrans[o], '\0', 32 );
+
+//			printf( "\tAllocated memory at 0x%x\n", indivTrans + o );
+
+		}
+
+//		printf( "curCount = %d\n", curCount );
+//		printf( "  curDay = %d\"%s\"\n", strlen(curDay), curDay );
+
+// segfault after this line
+		isolTransitions( indivTrans, curCount, curDay, strlen(curDay) );
+// segfault before this line
+
+		allTranTokens[i] = (struct transition*) malloc( WORD_SIZE * curCount );
+
+// segfault before this line
+		for( o = 0; o < curCount; o++ )
+		{
+			struct transition ctran;
+			tokenizeTransition( indivTrans[o], &ctran );
+
+			*(allTranTokens[i] + o) = ctran;
+
+			printTrans( allTranTokens[i] + o, i, o );
+
+
+			free( indivTrans[o] );
+		}
+
 	}
 
-	isolTransitions( mtrans, mtranct, mon, strlen(mon) );
-
-	printf( "m0 = \"%s\"\n", mtrans[0] );
-	printf( "m1 = \"%s\"\n", mtrans[1] );
-	printf( "m2 = \"%s\"\n", mtrans[2] );
-
-
-	struct transition mtr;
-
-	tokenizeTransition( mtrans[0], &mtr );
-
-	printTrans( &mtr, 2, 0 );
-
-	for( i = 0; i < mtranct; i++ )
+	for( i = 0; i < 7; i++ )
 	{
-		free( mtrans[i] );
+		free( allTranTokens[i] );
 	}
+//	int mtranct = countTransitions( mon, strlen(mon) );
+//	printf( "monday transitions:  %d\n", mtranct );
+//
+//	char* mtrans [mtranct];
+//	int i;
+//	for( i = 0; i < mtranct; i++ )
+//	{
+//		mtrans[i] = malloc(32);
+//	}
+//
+//	isolTransitions( mtrans, mtranct, mon, strlen(mon) );
+//
+//	printf( "m0 = \"%s\"\n", mtrans[0] );
+//	printf( "m1 = \"%s\"\n", mtrans[1] );
+//	printf( "m2 = \"%s\"\n", mtrans[2] );
+//
+//
+//	struct transition mtr;
+//
+//	tokenizeTransition( mtrans[0], &mtr );
+//
+//	printTrans( &mtr, 2, 0 );
+//
+//	for( i = 0; i < mtranct; i++ )
+//	{
+//		free( mtrans[i] );
+//	}
 
 	return 0;
 }
