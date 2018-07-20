@@ -34,6 +34,14 @@ struct tm* getDAT()
 
 void fixDAT( struct tm* ltime )
 {
+	if( ltime->tm_wday + 1 == 8 )
+	{
+		ltime->tm_wday = 1;
+	}
+	else
+	{
+		ltime->tm_wday += 1;
+	}
 	if( ltime->tm_mon + 1 == 13 )
 	{
 		ltime->tm_mon = 1;

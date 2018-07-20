@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "../FileIO.h"
-#include "../Standards.h"
+//#include "../FileIO.h"
+//#include "../Standards.h"
 
 struct transition
 {
