@@ -1,14 +1,5 @@
 #include "SchMgr.h"
 
-struct transition
-{
-	int day;
-	int second;
-	char mode;
-	double setpoint;
-	int zone;
-};
-
 void prTrans( struct transition* tr, int size )
 {
 	struct transition c;
