@@ -1,145 +1,210 @@
-Day 0
-Transition #0
+Est'd # transitions = 21
+	504 bytes to contain all structs
+	Tokenizing "1101.u(72,000)"
+	at 0x14de688
+	done
+
+	Tokenizing "1500.o(67,000)"
+	at 0x14de6a0
+	done
+
+	Tokenizing "2300.o(68,000)"
+	at 0x14de6b8
+	done
+
+	Tokenizing "0732.u(75,000)"
+	at 0x14de6d0
+	done
+
+	Tokenizing "1715.o(67,000)"
+	at 0x14de6e8
+	done
+
+	Tokenizing "2230.o(68,000)"
+	at 0x14de700
+	done
+
+	Tokenizing "0733.u(75,000)"
+	at 0x14de718
+	done
+
+	Tokenizing "1715.o(67,000)"
+	at 0x14de730
+	done
+
+	Tokenizing "2230.o(68,000)"
+	at 0x14de748
+	done
+
+	Tokenizing "0734.u(75,000)"
+	at 0x14de760
+	done
+
+	Tokenizing "1715.o(67,000)"
+	at 0x14de778
+	done
+
+	Tokenizing "2230.o(68,000)"
+	at 0x14de790
+	done
+
+	Tokenizing "0735.u(75,000)"
+	at 0x14de7a8
+	done
+
+	Tokenizing "1715.o(67,000)"
+	at 0x14de7c0
+	done
+
+	Tokenizing "2230.o(68,000)"
+	at 0x14de7d8
+	done
+
+	Tokenizing "0736.u(75,000)"
+	at 0x14de7f0
+	done
+
+	Tokenizing "1715.o(67,000)"
+	at 0x14de808
+	done
+
+	Tokenizing "2230.o(68,000)"
+	at 0x14de820
+	done
+
+	Tokenizing "1107.u(72,000)"
+	at 0x14de838
+	done
+
+	Tokenizing "1500.o(67,000)"
+	at 0x14de850
+	done
+
+	Tokenizing "2300.o(68,000)"
+	at 0x14de868
+	done
+
+Transition 0
 	  second = 39660
 	    mode = u
 	setpoint = 72.000000
 	    zone = 0
 
-Day 0
-Transition #1
+Transition 1
 	  second = 54000
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 0
-Transition #2
+Transition 2
 	  second = 82800
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 1
-Transition #0
+Transition 3
 	  second = 27120
 	    mode = u
 	setpoint = 75.000000
 	    zone = 0
 
-Day 1
-Transition #1
+Transition 4
 	  second = 62100
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 1
-Transition #2
+Transition 5
 	  second = 81000
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 2
-Transition #0
+Transition 6
 	  second = 27180
 	    mode = u
 	setpoint = 75.000000
 	    zone = 0
 
-Day 2
-Transition #1
+Transition 7
 	  second = 62100
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 2
-Transition #2
+Transition 8
 	  second = 81000
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 3
-Transition #0
+Transition 9
 	  second = 27240
 	    mode = u
 	setpoint = 75.000000
 	    zone = 0
 
-Day 3
-Transition #1
+Transition 10
 	  second = 62100
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 3
-Transition #2
+Transition 11
 	  second = 81000
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 4
-Transition #0
+Transition 12
 	  second = 27300
 	    mode = u
 	setpoint = 75.000000
 	    zone = 0
 
-Day 4
-Transition #1
+Transition 13
 	  second = 62100
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 4
-Transition #2
+Transition 14
 	  second = 81000
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 5
-Transition #0
+Transition 15
 	  second = 27360
 	    mode = u
 	setpoint = 75.000000
 	    zone = 0
 
-Day 5
-Transition #1
+Transition 16
 	  second = 62100
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 5
-Transition #2
+Transition 17
 	  second = 81000
 	    mode = o
 	setpoint = 68.000000
 	    zone = 0
 
-Day 6
-Transition #0
+Transition 18
 	  second = 40020
 	    mode = u
 	setpoint = 72.000000
 	    zone = 0
 
-Day 6
-Transition #1
+Transition 19
 	  second = 54000
 	    mode = o
 	setpoint = 67.000000
 	    zone = 0
 
-Day 6
-Transition #2
+Transition 20
 	  second = 82800
 	    mode = o
 	setpoint = 68.000000

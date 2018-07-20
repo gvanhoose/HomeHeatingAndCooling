@@ -112,14 +112,9 @@ int countTransitions( char* daySch, int size )
 
 void isolTransitions( char** trans, int ntrans, char* daySch, int size )
 {
-//	printf( "Entering isolTransitions(...)\n" );
-//	printf( "\tntrans = %d\n", ntrans );
-//	printf( "\t  size = %d\n", size );
-
 	int curtran = 0, i, toklen = 0;
 	for( i = 2; i < size; i++ )		// skip the first two chars, which is the weekday number and the first space
 	{
-//		printf( "i = %d ", i );
 		if( daySch[i] == ' ' )
 		{
 			curtran++;
@@ -127,14 +122,12 @@ void isolTransitions( char** trans, int ntrans, char* daySch, int size )
 			continue;
 		}
 		trans[curtran][toklen++] = daySch[i];
-
-//		printf( "\ttrans[%d][%d] = %c\n", curtran, toklen - 1, trans[curtran][toklen - 1] );
 	}
-//	printf( "Exiting isolTransitions(...)\n" );
 }
 
 struct transition
 {
+	int day;
 	int second;
 	char mode;
 	double setpoint;
@@ -152,24 +145,44 @@ void printTrans( struct transition* tr, int day, int tnum )
 
 	printf( "\n" );
 }
-
+void prTrans( struct transition* tr, int size )
+{
+	struct transition c;
+	int i;
+	for( i = 0; i < size; i++ )
+	{
+		c = tr[i];
+		printf( "Transition %d\n", i );
+		printf( "\t     day = %d\n", c.day );
+		printf( "\t  second = %d\n", c.second );
+		printf( "\t    mode = %c\n", c.mode );
+		printf( "\tsetpoint = %lf\n", c.setpoint );
+		printf( "\t    zone = %d\n\n", c.zone );
+	}
+}
 
 void tokenizeTransition( char* transition, struct transition* tran )
 {
+
+//	printf( "\tTokenizing \"%s\"\n", transition );
+//	printf( "\tat 0x%x\n", tran );
+
 	char
-		time0 = transition[0],
-		time1 = transition[1],
-		time2 = transition[2],
-		time3 = transition[3],
-		md = transition[5],
-		stpt0 = transition[7],	// \_ it's always gonna be two digits
-		stpt1 = transition[8],	// /
-		zone0 = transition[10],
-		zone1 = transition[11],
-		zone2 = transition[12]
+		day = transition[0],
+		time0 = transition[1],
+		time1 = transition[2],
+		time2 = transition[3],
+		time3 = transition[4],
+		md = transition[6],
+		stpt0 = transition[8],	// \_ it's always gonna be two digits
+		stpt1 = transition[9],	// /
+		zone0 = transition[11],
+		zone1 = transition[12],
+		zone2 = transition[13]
 		;
 
 	int
+		dy = (int) (day & 0x0F),
 		hr = (int)( ((time0 & 0x0F)*10) + (time1 & 0x0F) ),
 		mn = (int)( ((time2 & 0x0F)*10) + (time3 & 0x0F) ),
 		sec = hr*3600 + mn*60,
@@ -177,55 +190,98 @@ void tokenizeTransition( char* transition, struct transition* tran )
 		zn = (int)( ((zone0 & 0x0F)*100) + ((zone1 & 0x0F)*10) + (zone2 & 0x0f) )
 		;
 
+	tran->day = dy;
 	tran->second = sec;
 	tran->mode = md;
 	tran->setpoint = (double)(sp);
 	tran->zone = zn;
+
+
+//	printf( "\tdone\n\n" );
 }
 
-void convertSchedule()
+int convertSchedule( struct transition* theWeek, char* buffer, int ssize )
 {
 	int txtalloc = 1024;
-	char buffer [txtalloc];
-	int ssize = getSchedule( buffer, txtalloc );//TODO:  left off here, quite abruptly
+	int dayOffsets [7];
 
+	schByDays( buffer, ssize, dayOffsets );
+
+	int tcounts [7];
+	char* curDay;
+	int i, curCount, o, outsize;
+	for( i = 0; i < 7; i++ )
+	{
+		curDay = buffer + dayOffsets[i];
+		curCount = countTransitions( curDay, strlen(curDay) );
+
+		char* indivTrans [curCount];
+		for( o = 0; o < curCount; o++ )
+		{
+			indivTrans[o] = malloc(32);
+			memset( indivTrans[o], '\0', 32 );
+		}
+		isolTransitions( indivTrans, curCount, curDay, strlen(curDay) );
+
+		for( o = 0; o < curCount; o++ )
+		{
+			tokenizeTransition( indivTrans[o], theWeek + outsize++ );//theWeek + outsize++ );
+			free( indivTrans[o] );
+		}
+	}
+
+	return outsize;
+
+}
 
 int main()
 {
 	struct tm* ltime = getDAT();
-
 	fixDAT( ltime );
 
-//	printTime( ltime );
+	char rawSched [1024];
+	int
+		rawSchSize = getSchedule( rawSched, 1024 ),
+		ntrans = countTransitions( rawSched, rawSchSize )
 
+	;
 
+	printf( "Est'd # transitions = %d\n", ntrans );
+	printf( "\t%d bytes to contain all structs\n", ntrans * sizeof(struct transition) );
+
+	struct transition* alltrans;
+	alltrans = (struct transition*) malloc( ntrans * sizeof(struct transition) );
+
+//	int i;
+//	for( i = 0; i < ntrans; i++ )
+//	{
+//		alltrans[i] = (struct transition) malloc( sizeof( struct transition) );
+////		struct transition* p_tran;
+////		alltrans[i] = p_tran;
+//	}
+
+//	struct transition alltrans [ntrans];
+
+//	dbug();
+	int tranSize = convertSchedule( alltrans, rawSched, rawSchSize );
+
+//dbug();
+//printf( " seconds = %d\n", alltrans[0]->second );
+//printf( "    mode = %c\n", alltrans[0]->mode );
+//printf( "setpoint = %lf\n", alltrans[0]->setpoint );
+//printf( "    zone = %d\n", alltrans[0]->zone );
+
+	prTrans( alltrans, tranSize );
+
+	free( (void*) alltrans );
+
+/*
 	int schalloc = 1024;
 	char schbuff [schalloc];
 
 	int schsize = getSchedule( schbuff, schalloc );
-
-//	printf( "schsize = %d\n", schsize );
-//	printf( "\nschedule:\n<\n%s>\n\n", schbuff );
-
 	int dayOffsets [7];
-
 	schByDays( schbuff, schsize, dayOffsets );
-
-//	char* sun = schbuff + dayOffsets[0];
-//	char* mon = schbuff + dayOffsets[1];
-//	char* tue = schbuff + dayOffsets[2];
-//	char* wed = schbuff + dayOffsets[3];
-//	char* thu = schbuff + dayOffsets[4];
-//	char* fri = schbuff + dayOffsets[5];
-//	char* sat = schbuff + dayOffsets[6];
-//
-//	printf( "\t   Sunday = \"%s\"\n", sun );
-//	printf( "\t   Monday = \"%s\"\n", mon );
-//	printf( "\t  Tuesday = \"%s\"\n", tue );
-//	printf( "\tWednesday = \"%s\"\n", wed );
-//	printf( "\t Thursday = \"%s\"\n", thu );
-//	printf( "\t   Friday = \"%s\"\n", fri );
-//	printf( "\t Saturday = \"%s\"\n", sat );
 
 	struct transition* allTranTokens [7];
 	int tcounts [7];
@@ -233,41 +289,24 @@ int main()
 	int i, curCount, o;
 	for( i = 0; i < 7; i++ )
 	{
-// segfault after this line at i = 0
-
 		curDay = schbuff + dayOffsets[i];
 		curCount = tcounts[i] = countTransitions( curDay, strlen(curDay) );
 
 		char* indivTrans [curCount];
-
 		for( o = 0; o < curCount; o++ )
 		{
 			indivTrans[o] = malloc(32);
 			memset( indivTrans[o], '\0', 32 );
-
-//			printf( "\tAllocated memory at 0x%x\n", indivTrans + o );
-
 		}
 
-//		printf( "curCount = %d\n", curCount );
-//		printf( "  curDay = %d\"%s\"\n", strlen(curDay), curDay );
-
-// segfault after this line
 		isolTransitions( indivTrans, curCount, curDay, strlen(curDay) );
-// segfault before this line
-
 		allTranTokens[i] = (struct transition*) malloc( WORD_SIZE * curCount );
-
-// segfault before this line
 		for( o = 0; o < curCount; o++ )
 		{
 			struct transition ctran;
 			tokenizeTransition( indivTrans[o], &ctran );
 
 			*(allTranTokens[i] + o) = ctran;
-
-			printTrans( allTranTokens[i] + o, i, o );
-
 
 			free( indivTrans[o] );
 		}
@@ -278,6 +317,7 @@ int main()
 	{
 		free( allTranTokens[i] );
 	}
+*/
 //	int mtranct = countTransitions( mon, strlen(mon) );
 //	printf( "monday transitions:  %d\n", mtranct );
 //
