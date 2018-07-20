@@ -5,64 +5,29 @@
 #include "../FileIO.h"
 #include "../Standards.h"
 
-#define BASE_YEAR 1900
-#define MONTH_OFFSET 1
-
-void printn( char* s, int i )
+struct transition
 {
-	printf( "\t%s = %d\n", s, i );
-}
-void printTime( struct tm* ltime )
-{
-	printf( "Local Time\n" );
-	printn( "   year", ltime->tm_year );
-	printn( "  month", ltime->tm_mon );
-	printn( "    day", ltime->tm_mday );
-	printn( "   hour", ltime->tm_hour );
-	printn( "    min", ltime->tm_min );
-	printn( "    sec", ltime->tm_sec );
-	printn( "weedkay", ltime->tm_wday );
-	printn( "    DST", ltime->tm_isdst );
-	printf( "\n" );
-}
+	int day;
+	int second;
+	char mode;
+	double setpoint;
+	int zone;
+};
 
-time_t getETime()
+void prTrans( struct transition* tr, int size )
 {
-	time_t etime;
-	time( &etime );
-	return etime;
-}
-
-struct tm* getDAT()
-{
-	time_t etime = getETime();
-
-	return localtime( &etime );
-}
-
-void fixDAT( struct tm* ltime )
-{
-	if( ltime->tm_mon + 1 == 13 )
+	struct transition c;
+	int i;
+	for( i = 0; i < size; i++ )
 	{
-		ltime->tm_mon = 1;
-		ltime->tm_year += 1901;
+		c = tr[i];
+		printf( "Transition %d\n", i );
+		printf( "\t     day = %d\n", c.day );
+		printf( "\t  second = %d\n", c.second );
+		printf( "\t    mode = %c\n", c.mode );
+		printf( "\tsetpoint = %lf\n", c.setpoint );
+		printf( "\t    zone = %d\n\n", c.zone );
 	}
-	else
-	{
-		ltime->tm_mon += 1;
-		ltime->tm_year += 1900;
-	}
-}
-
-int secondOfTheDay( struct tm* ltime )
-{
-	int
-		hour = ltime->tm_hour,
-		min = ltime->tm_min,
-		sec = ltime->tm_sec
-	;
-
-	return (hour * 3600) + (min * 60) + sec;
 }
 
 int getSchedule( char* buffer, int alloc )
@@ -125,48 +90,9 @@ void isolTransitions( char** trans, int ntrans, char* daySch, int size )
 	}
 }
 
-struct transition
-{
-	int day;
-	int second;
-	char mode;
-	double setpoint;
-	int zone;
-};
-void printTrans( struct transition* tr, int day, int tnum )
-{
-	printf( "Day %d\n", day );
-	printf( "Transition #%d\n", tnum );
-
-	printf( "\t  second = %d\n", tr->second );
-	printf( "\t    mode = %c\n", tr->mode );
-	printf( "\tsetpoint = %lf\n", tr->setpoint );
-	printf( "\t    zone = %d\n", tr->zone );
-
-	printf( "\n" );
-}
-void prTrans( struct transition* tr, int size )
-{
-	struct transition c;
-	int i;
-	for( i = 0; i < size; i++ )
-	{
-		c = tr[i];
-		printf( "Transition %d\n", i );
-		printf( "\t     day = %d\n", c.day );
-		printf( "\t  second = %d\n", c.second );
-		printf( "\t    mode = %c\n", c.mode );
-		printf( "\tsetpoint = %lf\n", c.setpoint );
-		printf( "\t    zone = %d\n\n", c.zone );
-	}
-}
 
 void tokenizeTransition( char* transition, struct transition* tran )
 {
-
-//	printf( "\tTokenizing \"%s\"\n", transition );
-//	printf( "\tat 0x%x\n", tran );
-
 	char
 		day = transition[0],
 		time0 = transition[1],
@@ -195,9 +121,6 @@ void tokenizeTransition( char* transition, struct transition* tran )
 	tran->mode = md;
 	tran->setpoint = (double)(sp);
 	tran->zone = zn;
-
-
-//	printf( "\tdone\n\n" );
 }
 
 int convertSchedule( struct transition* theWeek, char* buffer, int ssize )
@@ -232,119 +155,4 @@ int convertSchedule( struct transition* theWeek, char* buffer, int ssize )
 
 	return outsize;
 
-}
-
-int main()
-{
-	struct tm* ltime = getDAT();
-	fixDAT( ltime );
-
-	char rawSched [1024];
-	int
-		rawSchSize = getSchedule( rawSched, 1024 ),
-		ntrans = countTransitions( rawSched, rawSchSize )
-
-	;
-
-	printf( "Est'd # transitions = %d\n", ntrans );
-	printf( "\t%d bytes to contain all structs\n", ntrans * sizeof(struct transition) );
-
-	struct transition* alltrans;
-	alltrans = (struct transition*) malloc( ntrans * sizeof(struct transition) );
-
-//	int i;
-//	for( i = 0; i < ntrans; i++ )
-//	{
-//		alltrans[i] = (struct transition) malloc( sizeof( struct transition) );
-////		struct transition* p_tran;
-////		alltrans[i] = p_tran;
-//	}
-
-//	struct transition alltrans [ntrans];
-
-//	dbug();
-	int tranSize = convertSchedule( alltrans, rawSched, rawSchSize );
-
-//dbug();
-//printf( " seconds = %d\n", alltrans[0]->second );
-//printf( "    mode = %c\n", alltrans[0]->mode );
-//printf( "setpoint = %lf\n", alltrans[0]->setpoint );
-//printf( "    zone = %d\n", alltrans[0]->zone );
-
-	prTrans( alltrans, tranSize );
-
-	free( (void*) alltrans );
-
-/*
-	int schalloc = 1024;
-	char schbuff [schalloc];
-
-	int schsize = getSchedule( schbuff, schalloc );
-	int dayOffsets [7];
-	schByDays( schbuff, schsize, dayOffsets );
-
-	struct transition* allTranTokens [7];
-	int tcounts [7];
-	char* curDay;
-	int i, curCount, o;
-	for( i = 0; i < 7; i++ )
-	{
-		curDay = schbuff + dayOffsets[i];
-		curCount = tcounts[i] = countTransitions( curDay, strlen(curDay) );
-
-		char* indivTrans [curCount];
-		for( o = 0; o < curCount; o++ )
-		{
-			indivTrans[o] = malloc(32);
-			memset( indivTrans[o], '\0', 32 );
-		}
-
-		isolTransitions( indivTrans, curCount, curDay, strlen(curDay) );
-		allTranTokens[i] = (struct transition*) malloc( WORD_SIZE * curCount );
-		for( o = 0; o < curCount; o++ )
-		{
-			struct transition ctran;
-			tokenizeTransition( indivTrans[o], &ctran );
-
-			*(allTranTokens[i] + o) = ctran;
-
-			free( indivTrans[o] );
-		}
-
-	}
-
-	for( i = 0; i < 7; i++ )
-	{
-		free( allTranTokens[i] );
-	}
-*/
-//	int mtranct = countTransitions( mon, strlen(mon) );
-//	printf( "monday transitions:  %d\n", mtranct );
-//
-//	char* mtrans [mtranct];
-//	int i;
-//	for( i = 0; i < mtranct; i++ )
-//	{
-//		mtrans[i] = malloc(32);
-//	}
-//
-//	isolTransitions( mtrans, mtranct, mon, strlen(mon) );
-//
-//	printf( "m0 = \"%s\"\n", mtrans[0] );
-//	printf( "m1 = \"%s\"\n", mtrans[1] );
-//	printf( "m2 = \"%s\"\n", mtrans[2] );
-//
-//
-//	struct transition mtr;
-//
-//	tokenizeTransition( mtrans[0], &mtr );
-//
-//	printTrans( &mtr, 2, 0 );
-//
-//	for( i = 0; i < mtranct; i++ )
-//	{
-//		free( mtrans[i] );
-//	}
-
-	return 0;
 }
