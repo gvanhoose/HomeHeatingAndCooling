@@ -6,6 +6,7 @@
 #include <string.h>
 #include "../FileIO.h"
 #include "../Standards.h"
+#include "../ValuePoint/ValuePoint.h"
 
 int findDay( struct transition* tar, struct transition* src, int size, int day )
 {
@@ -20,39 +21,26 @@ int findDay( struct transition* tar, struct transition* src, int size, int day )
 	return outsize;
 }
 
-int isNextTransition( int trday, int curday, int trsec, int cursec, int smallestPosWaitSoFar )
-{
-	return trday == curday && trsec - cursec < smallestPosWaitSoFar && trsec - cursec >= 0;
-}
-
 int findNextTransition( struct transition* trs, int size, int day, int second )
 {
 	int i, sposwtIndex = 0, smallestPositiveWait = (-1 >> 1);
 	for( i = 0; i < size; i++ )
 	{
-		if( isNextTransition( trs[i].day, day, trs[i].second, second, smallestPositiveWait ) )
+		int
+			ctDay = trs[i].day,
+			ctSec = trs[i].second
+			;
+
+		if( day == ctDay )
 		{
-			sposwtIndex = i;
-			smallestPositiveWait = trs[i].second - second;
+			if( second <= ctSec )
+			{
+				return i;
+			}
 		}
-//		if( trs[i].day == dat->tm_wday )
-//		{
-//			if( trs[i].second - second < smallestPositiveWait && trs[i].second - second >= 0 )
-//			{
-//				sposwtIndex = i;
-//				smallestPosWait = trs[i].second - second;
-//			}
-//		}
 	}
-	if( sposwtIndex > 0 )
-	{
-		return sposwtIndex;
-	}
-
-	return findNextTransition( trs, size, (day + 1 == 8)? 1 : day + 1, second );
-
+	return findNextTransition( trs, size, (day + 1 == 8)? 1 : day + 1, 0 );
 }
-
 void reorgTrans( struct transition* tar, struct transition* src, int size, int day, int second )
 {
 	int
@@ -63,8 +51,6 @@ void reorgTrans( struct transition* tar, struct transition* src, int size, int d
 
 	do
 	{
-printf( "\ti = %d\n", i );
-
 		tar[tIndex++] = src[i];
 
 		i = (i + 1 == size)? 0 : i + 1;
@@ -72,6 +58,23 @@ printf( "\ti = %d\n", i );
 	} while( i != startPos );
 
 
+}
+
+int timeToTransition( struct transition* nt, int day, int sec )
+{
+	if( nt->day == day )	// the "easy" case...
+	{
+		return nt->second - sec;
+	}
+
+	int
+		tday = (nt->day >= day)? nt->day : nt->day + 7,
+		ndays = tday - day,
+		dayseconds = 24 * 3600,
+		daysInSeconds = (ndays - 1)*dayseconds + nt->second + (dayseconds - sec)
+		;
+
+	return ((ndays - 1) * dayseconds) + nt->second + (dayseconds - sec);
 }
 
 int main()
@@ -84,9 +87,6 @@ int main()
 		dayOfWeek = locTime->tm_wday
 		;
 
-//	printf( "Second #%d\n", secOfDay );
-//	printf( "   Day #%d\n", dayOfWeek );
-
 	char txtSched [1024];
 	int
 		txtSchSize = getSchedule( txtSched, 1024 ),
@@ -98,24 +98,51 @@ int main()
 
 	int tranSize = convertSchedule( allTrans, txtSched, txtSchSize );
 
-//	prTrans( allTrans, tranSize );
-
 	struct transition* reorgs;
 	reorgs = (struct transition*) malloc( ntrans * sizeof( struct transition ) );
 
-dbug();
 	reorgTrans( reorgs, allTrans, tranSize, dayOfWeek, secOfDay );
 
 
-	printf( "\nReorganizd\n" );
-
-	prTrans( reorgs, tranSize );
-
+//	printf( "\nReorganizd\n" );
+//	prTrans( reorgs, tranSize );
 
 
+	struct transition currentMode = reorgs[ tranSize - 1 ];
+	struct transition nextMode = reorgs[0];
+
+	printf( "currentMode:\n" );
+	pTr( &currentMode );
+
+	printf( "nextMode:\n" );
+	pTr( &nextMode );
 
 
+	int
+		tttSec = timeToTransition( &nextMode, dayOfWeek, secOfDay ),
+		daysRem = tttSec / (24 * 3600),
+		hoursRem = (tttSec % (24 * 3600)) / 3600,
+		minsRem = ((tttSec % (24 * 3600)) % 3600) / 60,
+		secsRem = ((tttSec % (24 * 3600)) % 3600) % 60
+		;
 
+	printf( "Time to transition = %d\n", tttSec );
+	printf( "                 D = %d\n", daysRem );
+	printf( "                 H = %d\n", hoursRem );
+	printf( "                 M = %d\n", minsRem );
+	printf( "                 S = %d\n", secsRem );
+
+
+	char tttVPoint [16];
+	memset( tttVPoint, '\0', 16 );
+	int valueLen = snprintf( tttVPoint, 16, "%d", tttSec );
+
+	writeToVPoint( "../VPoints/TimeToTransition.vpoint", tttVPoint );
+
+	//char* cMode;
+	//*cMode = currentMode.mode;
+
+	writeToVPoint( "../VPoints/CurrentMode.vpoint", &currentMode.mode );
 
 	return 0;
 }

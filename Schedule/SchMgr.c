@@ -15,6 +15,11 @@ void prTrans( struct transition* tr, int size )
 		printf( "\t    zone = %d\n\n", c.zone );
 	}
 }
+void pTr( struct transition* tr )
+{
+	prTrans( tr, 1 );
+}
+
 
 int getSchedule( char* buffer, int alloc )
 {

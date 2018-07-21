@@ -18,6 +18,7 @@ struct transition
 };
 
 void prTrans( struct transition*, int );
+void pTr( struct transition* );
 int getSchedule( char*, int );
 void schByDays( char*, int, int* );
 int countTransitions( char*, int );
