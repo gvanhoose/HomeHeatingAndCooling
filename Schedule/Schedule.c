@@ -111,26 +111,26 @@ int main()
 	struct transition currentMode = reorgs[ tranSize - 1 ];
 	struct transition nextMode = reorgs[0];
 
-	printf( "currentMode:\n" );
-	pTr( &currentMode );
-
-	printf( "nextMode:\n" );
-	pTr( &nextMode );
+//	printf( "currentMode:\n" );
+//	pTr( &currentMode );
+//
+//	printf( "nextMode:\n" );
+//	pTr( &nextMode );
 
 
 	int
-		tttSec = timeToTransition( &nextMode, dayOfWeek, secOfDay ),
-		daysRem = tttSec / (24 * 3600),
-		hoursRem = (tttSec % (24 * 3600)) / 3600,
-		minsRem = ((tttSec % (24 * 3600)) % 3600) / 60,
-		secsRem = ((tttSec % (24 * 3600)) % 3600) % 60
+		tttSec = timeToTransition( &nextMode, dayOfWeek, secOfDay )//,
+//		daysRem = tttSec / (24 * 3600),
+//		hoursRem = (tttSec % (24 * 3600)) / 3600,
+//		minsRem = ((tttSec % (24 * 3600)) % 3600) / 60,
+//		secsRem = ((tttSec % (24 * 3600)) % 3600) % 60
 		;
 
-	printf( "Time to transition = %d\n", tttSec );
-	printf( "                 D = %d\n", daysRem );
-	printf( "                 H = %d\n", hoursRem );
-	printf( "                 M = %d\n", minsRem );
-	printf( "                 S = %d\n", secsRem );
+//	printf( "Time to transition = %d\n", tttSec );
+//	printf( "                 D = %d\n", daysRem );
+//	printf( "                 H = %d\n", hoursRem );
+//	printf( "                 M = %d\n", minsRem );
+//	printf( "                 S = %d\n", secsRem );
 
 
 	char tttVPoint [16];
@@ -138,9 +138,6 @@ int main()
 	int valueLen = snprintf( tttVPoint, 16, "%d", tttSec );
 
 	writeToVPoint( "../VPoints/TimeToTransition.vpoint", tttVPoint );
-
-	//char* cMode;
-	//*cMode = currentMode.mode;
 
 	writeToVPoint( "../VPoints/CurrentMode.vpoint", &currentMode.mode );
 
