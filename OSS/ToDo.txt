@@ -1,0 +1,5 @@
+In order to calculate	Need	Params  Units
+roomAirMass	need	RoomVolume, RoomAirDensity  kg = m^3 * kg/m^3
+massFlow	need	VolumetricFlow, FlowDensity kg/s = m^3/s * kg/sm^3
+
+
