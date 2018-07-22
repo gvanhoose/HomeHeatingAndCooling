@@ -1,0 +1,5 @@
+In order to calculate	Need	Params
+roomAirMass	need	RoomVolume, InitialSpHeat
+massFlow	need	VolumetricFlow, FlowDensity
+
+
