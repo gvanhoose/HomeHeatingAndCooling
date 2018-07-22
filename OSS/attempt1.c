@@ -113,37 +113,5 @@ int main()
 		printf( "time to cool:  %d seconds\n", t );
 	}
 
-
-
-
-//	double
-//		roomAirMass = 1.5,
-//		roomSpHeat = 298.18,
-//		roomHeat = roomAirMass * roomSpHeat,
-//		massFlow = 0.0001,
-//		inletSpHeat = 285.14,
-//		inletHeat = massFlow * inletSpHeat,
-//		outletHeat,
-//		SptSpHeat = 290.16,
-//		SptHeat = SptSpHeat * roomAirMass,
-//		dH
-//		;
-//
-//	int i, elapsedSeconds = 0;
-////	while( roomHeat < SptHeat )	// heating loop
-//	while( roomHeat > SptHeat )
-//	{
-//		dH = inletHeat - (outletHeat = (massFlow * roomHeat)/roomAirMass);
-////		printf( "%lf = %lf - (%lf = (%lf * %lf)/%lf)\n", dH, inletHeat, outletHeat, massFlow, roomHeat, roomAirMass );
-//		roomHeat += dH;
-////		printf( "%lf += %lf\n", roomHeat, dH );
-//
-//		elapsedSeconds++;
-//	}
-//
-//	printf( "Elapsed time = %d seconds\n", elapsedSeconds );
-//	printf( "%d minutes, %d seconds\n", elapsedSeconds / 60, elapsedSeconds % 60 );
-
-
 	return 0;
 }
