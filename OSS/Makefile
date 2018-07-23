@@ -1,2 +1,2 @@
 all:
-	gcc ossVPoint.c ossCalcs.c ../ValuePoint/ValuePoint.c -o osvp
+	gcc OSS.c ossVPoint.c ossCalcs.c ../ValuePoint/ValuePoint.c -o oss

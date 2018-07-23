@@ -1,3 +1,6 @@
+#ifndef _OSSCALCS_H_
+#define _OSSCALCS_H_
+
 #include <stdio.h>
 
 struct loopdata
@@ -16,3 +19,5 @@ int ossHeatLoop( struct loopdata*, double );
 int ossCoolLoop( struct loopdata*, double );
 static int needsHeat( struct loopdata*, double );
 static int needsCool( struct loopdata*, double );
+
+#endif//_OSSCALCS_H_

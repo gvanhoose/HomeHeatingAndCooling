@@ -6,7 +6,9 @@
 
 #define TIME_TO_TRANSITION "/home/pi/Desktop/HomeHeatingAndCooling/VPoints/TimeToTransition.vpoint"
 
-
-void dbug(){printf( "Reaching\n" );};
+//#ifndef _GEOSTD_FUNCTIONS_
+//#define _GEOSTD_FUNCTIONS_
+//void dbug(){printf( "Reaching\n" );};
+//#endif//_GEOSTD_FUNCTIONS_
 
 #endif//_STANDARDS_H_
