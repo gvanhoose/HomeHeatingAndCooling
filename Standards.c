@@ -5,6 +5,40 @@ void dbug()
 	printf("Reaching");
 }
 
+double sToD( char* s )
+{
+	double out = 0.0, factor = 0.1, posneg = 1.0;
+	int pointHit = 0, slen = strlen(s), i;
+	for( i = 0; i < slen; i++ )
+	{
+		if( s[i] == '.' )
+		{
+			pointHit = 1;
+			continue;
+		}
+		if( i == 0 && s[i] == '-' )
+		{
+			posneg = -1.0;
+			continue;
+		}
+		if( s[i] < 0x30 || s[i] > 0x39 )
+		{
+			return out * posneg;
+		}
+		if( !pointHit )
+		{
+			out *= 10.0;
+			out += s[i] & 0x0f;
+		}
+		if( pointHit )
+		{
+			out += (s[i] & 0x0f) * factor;
+			factor /= 10.0;
+		}
+	}
+	return out * posneg;
+}
+
 double fToK(double f)
 {
 	return (f + 459.67) * 5.0/9.0;
