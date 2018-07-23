@@ -19,6 +19,15 @@ int main()
 	printf( "isp = %lf\n", ld.inletHeat );
 	printf( "rht = %lf\n", ld.roomHeat );
 
+	double time;
+	if( needsHeat( &ld, nxstpt ) )
+	{
+		printf( "Needs Heating\n" );
+	}
+	if( needsCool( &ld, nxstpt ) )
+	{
+		printf( "Needs Cooling\n" );
+	}
 
 
 

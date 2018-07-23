@@ -55,11 +55,11 @@ int ossCoolLoop( struct loopdata* data, double sptSpHeat )
 
 	return time;
 }
-static int needsHeat( struct loopdata* dt, double sptSpHeat )
+int needsHeat( struct loopdata* dt, double sptSpHeat )
 {
 	return sptSpHeat*dt->roomAirMass > dt->roomHeat;
 }
-static int needsCool( struct loopdata* dt, double sptSpHeat )
+int needsCool( struct loopdata* dt, double sptSpHeat )
 {
 	return sptSpHeat*dt->roomAirMass < dt->roomHeat;
 }
