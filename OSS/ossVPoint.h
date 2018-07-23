@@ -13,7 +13,6 @@ int coolEnabled();
 int econEnabled();
 double nextSetpoint();
 int nextRoom();
-double sToD(char*);
 void getRoomData(struct loopdata*, char*);
 void coolStart();
 void heatStart();
