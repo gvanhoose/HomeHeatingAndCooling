@@ -52,13 +52,7 @@ double nextSetpoint()
 	char nxsptbuff [8];
 	int i, bufflen = readVPoint( "../VPoints/NextSetpoint.vpoint", nxsptbuff, 8 );
 
-	double nxspt = 0.0;
-	for( i = 0; i < bufflen; i++ )
-	{
-		nxspt *= 10.0;
-		nxspt += nxsptbuff[i] & 0x0f;
-	}
-	return nxspt;
+	return sToD( nxsptbuff );
 }
 
 int nextRoom()
@@ -81,7 +75,7 @@ int nextRoom()
 
 double sToD( char* s )
 {
-	double out = 0.0, factor = 0.1;
+	double out = 0.0, factor = 0.1, posneg = 1.0;
 	int pointHit = 0, slen = strlen(s), i;
 	for( i = 0; i < slen; i++ )
 	{
@@ -89,6 +83,15 @@ double sToD( char* s )
 		{
 			pointHit = 1;
 			continue;
+		}
+		if( i == 0 && s[i] == '-' )
+		{
+			posneg = -1.0;
+			continue;
+		}
+		if( s[i] < 0x30 || s[i] > 0x39 )
+		{
+			return out * posneg;
 		}
 		if( !pointHit )
 		{
@@ -101,7 +104,7 @@ double sToD( char* s )
 			factor /= 10.0;
 		}
 	}
-	return out;
+	return out * posneg;
 }
 
 void getRoomData( struct loopdata* ld, char* roomNumber )
