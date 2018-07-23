@@ -50,15 +50,33 @@ int econEnabled()
 double nextSetpoint()
 {
 	char nxsptbuff [8];
-	int i, bufflen = readVPoint( "../VPoints/NextSetpoint.vpoint", nxsptbuff, 4 );
+	int i, bufflen = readVPoint( "../VPoints/NextSetpoint.vpoint", nxsptbuff, 8 );
 
 	double nxspt = 0.0;
-	for( i = 0; i < 8; i++ )
+	for( i = 0; i < bufflen; i++ )
 	{
 		nxspt *= 10.0;
 		nxspt += nxsptbuff[i] & 0x0f;
 	}
 	return nxspt;
+}
+
+int nextRoom()
+{
+	char nxrmbuff [8];
+	int i, bufflen = readVPoint( "../VPoints/NextRoom.vpoint", nxrmbuff, 8 );
+
+	int nxtRoom = 0;
+	for( i = 0; i < bufflen; i++ )
+	{
+		if( nxrmbuff[i] < 0x30 || nxrmbuff[i] > 0x39 )
+		{
+			continue;
+		}
+		nxtRoom *= 10;
+		nxtRoom += nxrmbuff[i] & 0x0f;
+	}
+	return nxtRoom;
 }
 
 double sToD( char* s )
@@ -86,7 +104,7 @@ double sToD( char* s )
 	return out;
 }
 
-void getRoomData( struct loopdata* ld )
+void getRoomData( struct loopdata* ld, char* roomNumber )
 {
 	char data [64];
 	char* ram = data;
@@ -94,12 +112,22 @@ void getRoomData( struct loopdata* ld )
 	char* rsh = data + 32;
 	char* ish = data + 48;
 
-	memset( data, '\0', 64 );
+	char vpaddr [128];
+	char* cvppos = vpaddr;
 
-	readVPoint( "../VPoints/RoomAirMass.vpoint", ram, 15 );
-	readVPoint( "../VPoints/MassFlowRate.vpoint", mfr, 15 );
-	readVPoint( "../VPoints/RoomSpecificHeat.vpoint", rsh, 15 );
-	readVPoint( "../VPoints/InletSpecificHeat.vpoint", ish, 15 );
+	cvppos += snprintf( vpaddr, 128, "../VPoints/Room%s", roomNumber );
+
+	snprintf( cvppos, 64, "/RoomAirMass.vpoint" );
+	readVPoint( vpaddr, ram, 15 );
+
+	snprintf( cvppos, 64, "/MassFlowRate.vpoint" );
+	readVPoint( vpaddr, mfr, 15 );
+
+	snprintf( cvppos, 64, "/RoomSpecificHeat.vpoint" );
+	readVPoint( vpaddr, rsh, 15 );
+
+	snprintf( cvppos, 64, "/InletSpecificHeat.vpoint" );
+	readVPoint( vpaddr, ish, 15 );
 
 	int i;
 	for( i = 0; i < 64; i++ )
@@ -139,26 +167,48 @@ void econStart()
 	writeToVPoint( "../VPoints/HeatCmd.vpoint", "0" );
 }
 
-int main()
-{
-	struct loopdata ld;
-	getRoomData( &ld );
-
-	printf( "ram = %lf\n", ld.roomAirMass );
-	printf( "mfr = %lf\n", ld.massFlow );
-	printf( "isp = %lf\n", ld.inletHeat );
-	printf( "rht = %lf\n", ld.roomHeat );
-//	int ttt = transDeadline();
-//	printf( "Time to next transition:  %d seconds\n", ttt );
-//
+//int main()
+//{
 //	int
-//		hena = heatEnabled(),
-//		cena = coolEnabled(),
-//		eena = econEnabled()
+//		nxtrans = transDeadline(),
+//		nxroom = nextRoom()
 //		;
 //
-//	printf( "heat, cool, econ flags:  %d, %d, %d\n", hena, cena, eena );
+//	char nxRm [3] = {'0','0',(char) (nxroom + 0x30)};	// until we add more rooms to the house, this will suffice!
+//
+//	struct loopdata ld;
+//	getRoomData( &ld, nxRm );
+//
+//	printf( "ram = %lf\n", ld.roomAirMass );
+//	printf( "mfr = %lf\n", ld.massFlow );
+//	printf( "isp = %lf\n", ld.inletHeat );
+//	printf( "rht = %lf\n", ld.roomHeat );
+//
+////	int
+////		nxtrans = transDeadline(),
+////		nxroom = nextRoom()
+////		;
+////	double nxstpt = nextSetpoint();
 //
 //
-	return 0;
-}
+//
+//
+//
+//
+//
+//
+//
+////	int ttt = transDeadline();
+////	printf( "Time to next transition:  %d seconds\n", ttt );
+////
+////	int
+////		hena = heatEnabled(),
+////		cena = coolEnabled(),
+////		eena = econEnabled()
+////		;
+////
+////	printf( "heat, cool, econ flags:  %d, %d, %d\n", hena, cena, eena );
+////
+////
+//	return 0;
+//}
