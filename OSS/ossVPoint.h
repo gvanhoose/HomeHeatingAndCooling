@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "../ValuePoint/ValuePoint.h"
 #include "../Standards.h"
+#include "ossCalcs.h"
 
 int transDeadline();
 int heatEnabled();
