@@ -31,7 +31,7 @@ int main()
 
 			exitSuccess = ( WIFEXITED( rawExitReturn ) );
 
-			if( !!exitSuccess )
+			if( !exitSuccess )
 			{
 				// code to handle child process failure should go here.  This should be done ASAP!
 			}
