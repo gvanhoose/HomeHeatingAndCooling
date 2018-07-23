@@ -1,20 +1,14 @@
 #include "ossCalcs.h"
 
-void setRoomAirMass( struct loopdata* ld, double roomAirMass )
-{
-	ld->roomAirMass = roomAirMass;
-}
 void setRoomHeat( struct loopdata* ld, double roomAirMass, double roomSpHeat )
 {
+	ld->roomAirMass = roomAirMass;
 	ld->roomHeat = roomAirMass * roomSpHeat;
 }
 void setInletHeat( struct loopdata* ld, double massFlow, double inletSpHeat )
 {
-	ld->inletHeat = massFlow * inletSpHeat;
-}
-void setMassFlow( struct loopdata* ld, double massFlow )
-{
 	ld->massFlow = massFlow;
+	ld->inletHeat = massFlow * inletSpHeat;
 }
 
 int ossHeatLoop( struct loopdata* data, double sptSpHeat )

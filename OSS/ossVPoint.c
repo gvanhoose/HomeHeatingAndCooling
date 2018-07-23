@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include "../ValuePoint/ValuePoint.h"
-#include "../Standards.h"
+#include "ossVPoint.h"
 
 int transDeadline()
 {
@@ -52,26 +50,35 @@ int econEnabled()
 
 void coolStart()
 {
-	writeToVPoint( "../VPoint/CoolStart.vpoint", "1" );
+	writeToVPoint( "../VPoints/FanCmd.vpoint",  "0" );
+	writeToVPoint( "../VPoints/CoolCmd.vpoint", "1" );
+	writeToVPoint( "../VPoints/HeatCmd.vpoint", "0" );
 }
 void heatStart()
 {
-	writeToVPoint( "..VPoint/HeatStart.vpoint", "1" );
+	writeToVPoint( "../VPoints/FanCmd.vpoint",  "1" );
+	writeToVPoint( "../VPoints/CoolCmd.vpoint", "0" );
+	writeToVPoint( "../VPoints/HeatCmd.vpoint", "1" );
 }
-
-int main()
+void econStart()
 {
-	int ttt = transDeadline();
-	printf( "Time to next transition:  %d seconds\n", ttt );
-
-	int
-		hena = heatEnabled(),
-		cena = coolEnabled(),
-		eena = econEnabled()
-		;
-
-	printf( "heat, cool, econ flags:  %d, %d, %d\n", hena, cena, eena );
-
-
-	return 0;
+	writeToVPoint( "../VPoints/FanCmd.vpoint",  "1" );
+	writeToVPoint( "../VPoints/CoolCmd.vpoint", "0" );
+	writeToVpoint( "../VPoints/HeatCmd.vpoint", "0" );
 }
+//int main()
+//{
+//	int ttt = transDeadline();
+//	printf( "Time to next transition:  %d seconds\n", ttt );
+//
+//	int
+//		hena = heatEnabled(),
+//		cena = coolEnabled(),
+//		eena = econEnabled()
+//		;
+//
+//	printf( "heat, cool, econ flags:  %d, %d, %d\n", hena, cena, eena );
+//
+//
+//	return 0;
+//}
