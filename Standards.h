@@ -9,6 +9,7 @@
 //#define TIME_TO_TRANSITION "/home/pi/Desktop/HomeHeatingAndCooling/VPoints/TimeToTransition.vpoint"
 
 void dbug();
+double sToD( char* )
 
 double fToK(double);
 double kToF(double);
