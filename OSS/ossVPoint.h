@@ -1,3 +1,4 @@
+
 #ifndef _OSSVPOINT_H_
 #define _OSSVPOINT_H_
 
@@ -9,6 +10,7 @@ int transDeadline();
 int heatEnabled();
 int coolEnabled();
 int econEnabled();
+double nextSetpoint();
 void coolStart();
 void heatStart();
 void econStart();

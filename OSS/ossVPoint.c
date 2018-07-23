@@ -47,6 +47,19 @@ int econEnabled()
 	return *ena & 0x1;
 }
 
+double nextSetpoint()
+{
+	char nxsptbuff [8];
+	int i, bufflen = readVPoint( "../VPooints/NextSetpoint.vpoint", nxsptbuff, 4 );
+
+	double nxspt = 0.0;
+	for( i = 0; i < 8; i++ )
+	{
+		nxspt *= 10.0;
+		nxspt += nxptbuff[i] & 0x0f;
+	}
+	return nxspt;
+}
 
 void coolStart()
 {
