@@ -4,8 +4,10 @@
 
 double getOutsideAirTemp()
 {
-	// in the near future, this will be rewritten such that it reads from a network device
-	return fToK(68.9);
+	char buff [16];
+	readVPoint( "../VPoints/OutsideAirTemp.vpoint", buff, 16 );
+
+	return fToK(sToD( buff ));
 }
 
 double getCoolEnableSetpoint()
@@ -38,46 +40,52 @@ int getHeatEna()
 	return (int) (buff[0] & 0x1);
 }
 
-int thermostat( double spt, double indiff, double temp, int prevOut, int reverse )
-{
-printf( "Thermostat:\n" );
-printf( "spt = %lf\n" );
-printf( "indiff = %lf\n" );
-printf( "temp = %lf\n" );
-printf( "prevOut = %lf\n" );
-
-	if( temp > spt - indiff || temp < spt + indiff )
-	{
-printf("\tthermostat no change\n");
-		return prevOut;
-	}
-printf("\tthermostat change\n");
-	if( temp <= spt - indiff )
-	{
-		return reverse? 1 : 0;
-	}
-	if( temp >= spt + indiff )
-	{
-		return reverse? 0 : 1;
-	}
-	return -1;	// this should never execute
-}
-
-int main()
+int main( int argc, char** argv )
 {
 	double
 		clgEnaSpt = getCoolEnableSetpoint(),
 		heatEnaSpt = getHeatEnableSetpoint(),
-		oaTemp = getOutsideAirTemp(),
-		sptIndiff = 1.8
+		oaTemp = getOutsideAirTemp(),	// commented-out for testing only!
+//		oaTemp = ((double)((argv[1][0] & 0x0F) * 10.0)) + ((double)(argv[1][1] & 0x0F)),
+		sptIndiff = 1.0/1.8,
+		loClgBound = clgEnaSpt - sptIndiff,
+		hiClgBound = clgEnaSpt + sptIndiff,
+		loHeatBound = heatEnaSpt - sptIndiff,
+		hiHeatBound = heatEnaSpt + sptIndiff
 		;
 
-	printf( "clgEnaSpt = %lf\n", clgEnaSpt );
-	printf( "   oaTemp = %lf\n", oaTemp );
-	printf( "sptIndiff = %lf\n", sptIndiff );
+	oaTemp = fToK(oaTemp);
 
-	int clgEna = thermostat( clgEnaSpt, sptIndiff, oaTemp, getCoolEna(), 0 );
-	int heatEna = thermostat( heatEnaSpt, sptIndiff, oaTemp, getHeatEna(), 0 );
+	int clgEna, heatEna,
+		prevClgEna = getCoolEna(),
+		prevHeatEna = getCoolEna()
+		;
+
+	if( oaTemp > loClgBound && oaTemp < hiClgBound )
+	{
+		clgEna = prevClgEna;
+	}
+	else if( oaTemp <= loClgBound )
+	{
+		clgEna = 0;
+	}
+	else if( oaTemp >= hiClgBound )
+	{
+		clgEna = 1;
+	}
+
+	if( oaTemp > loHeatBound && oaTemp < hiHeatBound )
+	{
+		heatEna = prevHeatEna;
+	}
+	else if( oaTemp <= loHeatBound )
+	{
+		heatEna = 1;
+	}
+	else if( oaTemp >= hiHeatBound )
+	{
+		heatEna = 0;
+	}
 
 	char enastr [] = {'0', '\0'};
 
@@ -89,7 +97,7 @@ int main()
 	writeToVPoint( "../VPoints/HeatEnable.vpoint", enastr );
 
 
-	printf( "Cool = %d\nHeat = %d\n", clgEna, heatEna );
+//	printf( "Cool = %d\nHeat = %d\n", clgEna, heatEna );
 
 	return 0;
 
