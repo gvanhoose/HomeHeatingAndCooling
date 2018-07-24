@@ -67,5 +67,15 @@ int main()
 		;
 	char curMode = getCharVPoint( "../VPoints/CurrentMode.vpoint" );
 
-	printf( "Next setpoint = %lf\n", nxSpt );
-	printf( "Cool enable setpoint = %lf\n"
+	printf( "Value Point Data:\n" );
+	printf( "\t              Next setpoint = %lf\n", nxSpt );
+	printf( "\t       Cool enable setpoint = %lf\n", clgEnaSpt );
+	printf( "\t       Heat enable setpoint = %lf\n", htgEnaSpt );
+	printf( "\t           Outside air temp = %lf\n", oaTemp );
+	printf( "\t                Cool enable = %d\n", clgEna );
+	printf( "\t                Heat enable = %d\n", htgEna );
+	printf( "\t                  Next room = %d\n", nxRm );
+	printf( "\tTime to reach next setpoint = %d\n", ttNxSpt );
+	printf( "\t         Time to transition = %d\n", ttTrans );
+	printf( "\t   Current operational mode = %c\n", curMode );
+	printf( "End Value Point Data\n" );
