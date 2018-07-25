@@ -2,7 +2,7 @@
 
 void dbug()
 {
-	printf("Reaching");
+	printf("Reaching\n");
 }
 
 double sToD( char* s )
